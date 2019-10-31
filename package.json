@@ -1,0 +1,26 @@
+{
+  "name": "bulletinboard-ads",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "node js/main.js",
+    "start:debug": "node --inspect-brk js/main.js",
+    "test": "node_modules/mocha/bin/mocha",
+    "test:debug": "node_modules/mocha/bin/mocha --inspect-brk"
+  },
+  "engines": {
+    "node": "8.12.x"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.3",
+    "pg": "^7.4.3"
+  },
+  "devDependencies": {
+    "eslint": "^5.9.0",
+    "mocha": "^5.2.0",
+    "supertest": "^3.3.0"
+  }
+}
