@@ -6,6 +6,7 @@ const bodyParser = require('body-parser')
 function ExpressServer(adsService) {
 	const CREATED = 201;
 	const NO_CONTENT = 204;
+	const NOT_FOUND = 404;
 
 	let httpServer
 	const app = express()
@@ -14,6 +15,15 @@ function ExpressServer(adsService) {
 	app.get('/api/v1/ads', async (req, res) => {
 		const ads = await adsService.getAll()
 		res.send(ads)
+	})
+
+	app.get('/api/v1/ads/:id', async (req, res) => {
+		const id = req.params.id
+		const ad = await adsService.getById(id)
+		if (ad) {
+			return res.send(ad)
+		}
+		return res.status(NOT_FOUND).end()
 	})
 
 	app.post('/api/v1/ads', async (req, res) => {
@@ -26,12 +36,22 @@ function ExpressServer(adsService) {
 		res.status(NO_CONTENT).end()
 	})
 
-	this.start = function (port) {
+	app.delete('/api/v1/ads/:id', async (req, res) => {
+		const id = req.params.id
+		const ad = await adsService.getById(id)
+		if (ad) {
+			await adsService.deleteById(id)
+			return res.status(NO_CONTENT).end()
+		}
+		return res.status(NOT_FOUND).end()
+	})
+
+	this.start = (port) => {
 		httpServer = app.listen(port)
 		console.log(`Server started on port ${port}`)
 	}
 
-	this.stop = async function () {
+	this.stop = async () => {
 		await adsService.stop()
 		httpServer.close()
 	}

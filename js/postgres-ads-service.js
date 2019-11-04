@@ -23,6 +23,11 @@ function PostgresAdsService(dbConnectionUri) {
         return ads.rows
     }
 
+    this.getById = async (id) => {
+        const ads = await pool.query('SELECT * FROM "advertisements" WHERE id = $1', [id])
+        return ads.rows[0] || null
+    }
+
     this.createAd = async (ad) => {
         await tableInitialized
         const statement = `INSERT INTO "advertisements" 
@@ -38,7 +43,12 @@ function PostgresAdsService(dbConnectionUri) {
         return pool.query('DELETE FROM "advertisements"')
     }
 
-    this.stop = async function () {
+    this.deleteById = async (id) => {
+        await tableInitialized
+        return pool.query('DELETE FROM "advertisements" WHERE id = $1', [id])
+    }
+
+    this.stop = async () => {
         await pool.end()
     }
 }
