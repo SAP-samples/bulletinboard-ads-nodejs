@@ -27,9 +27,10 @@ function PostgresAdsService(dbConnectionUri) {
         await tableInitialized
         const statement = `INSERT INTO "advertisements" 
         ("title", "contact", "price", "currency", "category", "createdAt") VALUES
-        ($1, $2, $3, $4, $5, $6)`;
+        ($1, $2, $3, $4, $5, $6) RETURNING *`;
         const values = [ad.title, ad.contact, ad.price, ad.currency, ad.category, new Date()]
-        return pool.query(statement, values)
+        const result = await pool.query(statement, values)
+        return result.rows[0]
     }
 
     this.deleteAll = async () => {

@@ -17,8 +17,8 @@ function ExpressServer(adsService) {
 	})
 
 	app.post('/api/v1/ads', async (req, res) => {
-		await adsService.createAd(req.body)
-		res.status(CREATED).end()
+		const ad = await adsService.createAd(req.body)
+		res.status(CREATED).header('location', `/api/v1/ads/${ad.id}`).send(ad)
 	})
 
 	app.delete('/api/v1/ads', async (req, res) => {
