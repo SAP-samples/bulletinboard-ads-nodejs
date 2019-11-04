@@ -4,13 +4,29 @@ const express = require('express')
 const bodyParser = require('body-parser')
 
 function ExpressServer(adsService) {
+	const CREATED = 201;
+	const NO_CONTENT = 204;
 
 	let httpServer
 	const app = express()
 	app.use(bodyParser.json())
 
+	app.get('/api/v1/ads', async (req, res) => {
+		const ads = await adsService.getAll()
+		res.send(ads)
+	})
+
+	app.post('/api/v1/ads', async (req, res) => {
+		await adsService.createAd(req.body)
+		res.status(CREATED).end()
+	})
+
+	app.delete('/api/v1/ads', async (req, res) => {
+		await adsService.deleteAll()
+		res.status(NO_CONTENT).end()
+	})
+
 	this.start = function (port) {
-		//REVISE are we listening to early - what if the DB is not yet connected?
 		httpServer = app.listen(port)
 		console.log(`Server started on port ${port}`)
 	}
