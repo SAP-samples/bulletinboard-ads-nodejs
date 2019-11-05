@@ -38,6 +38,16 @@ function PostgresAdsService(dbConnectionUri) {
         return result.rows[0]
     }
 
+    this.updateAd = async (id, ad) => {
+        await tableInitialized
+        const statement = `UPDATE "advertisements" SET 
+        ("title", "contact", "price", "currency", "category", "modifiedAt") =
+        ($1, $2, $3, $4, $5, $6) WHERE id = $7 RETURNING *`
+        const values = [ad.title, ad.contact, ad.price, ad.currency, ad.category, new Date(), id]
+        const result = await pool.query(statement, values)
+        return result.rows
+    }
+
     this.deleteAll = async () => {
         await tableInitialized
         return pool.query('DELETE FROM "advertisements"')

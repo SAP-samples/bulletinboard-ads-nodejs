@@ -78,10 +78,9 @@ describe('Server', function () {
 
     it('should return the ad with the given id', async () => {
         let result = await createAd()
-                
         const id = result.body.id
-        result = await baseUrl.get(`/api/v1/ads/${id}`).expect(200)
 
+        result = await baseUrl.get(`/api/v1/ads/${id}`).expect(200)
 
         assert.equal(result.body.title, 'My new ad')
         assert.equal(result.body.contact, 'john.doe@example.com')
@@ -91,12 +90,35 @@ describe('Server', function () {
     })
 
     it('should return 404 - NOT FOUND id ad does not exist', async () => {
-        result = await baseUrl.get(`/api/v1/ads/${-1}`).expect(404)
+        await baseUrl.get(`/api/v1/ads/${-1}`).expect(404)
+    })
+
+    it('should update the ad with the given id', async () => {
+        let result = await createAd()
+        const id = result.body.id
+
+        await baseUrl.put(`/api/v1/ads/${id}`).send({
+            'title': 'Updated ad',
+            'contact': 'updated.doe@example.com',
+            'price': 11.99,
+            'currency': 'USD',
+            'category': 'Newer'
+        }).expect(200)
+        result = await baseUrl.get(`/api/v1/ads/${id}`).expect(200)
+
+        assert.equal(result.body.title, 'Updated ad')
+        assert.equal(result.body.contact, 'updated.doe@example.com')
+        assert.equal(result.body.price, 11.99)
+        assert.equal(result.body.currency, 'USD')
+        assert.equal(result.body.category, 'Newer')
+    })
+
+    it('should return 404 - NOT FOUND on update if ad does not exist', async () => {
+        await baseUrl.put(`/api/v1/ads/${-1}`, {}).expect(404)
     })
 
     it('should delete the ad with the given id', async () => {
         const result = await createAd()
-        
         const id = result.body.id
         
         await baseUrl.delete(`/api/v1/ads/${id}`).expect(204)
@@ -104,6 +126,6 @@ describe('Server', function () {
     })
 
     it('should return 404 - NOT FOUND on deletion if ad does not exist', async () => {
-        result = await baseUrl.delete(`/api/v1/ads/${-1}`).expect(404)
+        await baseUrl.delete(`/api/v1/ads/${-1}`).expect(404)
     })
 })

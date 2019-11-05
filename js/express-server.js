@@ -31,6 +31,16 @@ function ExpressServer(adsService) {
 		res.status(CREATED).header('location', `/api/v1/ads/${ad.id}`).send(ad)
 	})
 
+	app.put('/api/v1/ads/:id', async (req, res) => {
+		const id = req.params.id
+		const ad = await adsService.getById(id)
+		if (ad) {
+			await adsService.updateAd(id, req.body)
+			return res.end()
+		}
+		return res.status(NOT_FOUND).end()
+	})
+
 	app.delete('/api/v1/ads', async (req, res) => {
 		await adsService.deleteAll()
 		res.status(NO_CONTENT).end()
