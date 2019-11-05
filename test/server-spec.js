@@ -56,21 +56,8 @@ describe('Server', function () {
     })
 
     it('should respond with all ads', async () => {
-        await baseUrl.post('/api/v1/ads').send({
-            'title': 'My new ad',
-            'contact': 'john.doe@example.com',
-            'price': 15.99,
-            'currency': 'EUR',
-            'category': 'New'
-        }).expect(201)
-
-        await baseUrl.post('/api/v1/ads').send({
-            'title': 'Cool stuff',
-            'contact': 'jane.doe@example.com',
-            'price': 11.99,
-            'currency': 'USD',
-            'category': 'New2'
-        }).expect(201)
+        await createAd()
+        await createAd('Another ad')
 
         const result = await baseUrl.get('/api/v1/ads').expect(200)
         assert(result.body.length, 2)
@@ -82,11 +69,11 @@ describe('Server', function () {
         assert.equal(result.body[0].currency, 'EUR')
         assert.equal(result.body[0].category, 'New')
 
-        assert.equal(result.body[1].title, 'Cool stuff')
-        assert.equal(result.body[1].contact, 'jane.doe@example.com')
-        assert.equal(result.body[1].price, 11.99)
-        assert.equal(result.body[1].currency, 'USD')
-        assert.equal(result.body[1].category, 'New2')
+        assert.equal(result.body[1].title, 'Another ad')
+        assert.equal(result.body[1].contact, 'john.doe@example.com')
+        assert.equal(result.body[1].price, 15.99)
+        assert.equal(result.body[1].currency, 'EUR')
+        assert.equal(result.body[1].category, 'New')
     })
 
     it('should return the ad with the given id', async () => {
@@ -108,13 +95,7 @@ describe('Server', function () {
     })
 
     it('should delete the ad with the given id', async () => {
-        const result = await baseUrl.post('/api/v1/ads').send({
-            'title': 'My new ad',
-            'contact': 'john.doe@example.com',
-            'price': 15.99,
-            'currency': 'EUR',
-            'category': 'New'
-        }).expect(201)
+        const result = await createAd()
         
         const id = result.body.id
         
