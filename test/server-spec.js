@@ -49,6 +49,8 @@ describe('Server', function () {
         assert.equal(result.body.price, 15.99)
         assert.equal(result.body.currency, 'EUR')
         assert.equal(result.body.category, 'New')
+        assert(result.body.createdAt)
+        assert(!result.body.modifiedAt)
 
         const id = result.body.id
         assert(result.header.location, `/api/v1/ads/${id}`)
@@ -111,6 +113,7 @@ describe('Server', function () {
         assert.equal(result.body.price, 11.99)
         assert.equal(result.body.currency, 'USD')
         assert.equal(result.body.category, 'Newer')
+        assert(result.body.modifiedAt)
     })
 
     it('should return 404 - NOT FOUND on update if ad does not exist', async () => {
