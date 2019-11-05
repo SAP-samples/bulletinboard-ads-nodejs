@@ -3,17 +3,36 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 
-function ExpressServer(adsService) {
-	const CREATED = 201;
-	const NO_CONTENT = 204;
-	const NOT_FOUND = 404;
+const determineRatingState = (rating) => {
+	if (rating < 2) {
+		return 'Error'
+	} else if (rating < 4) {
+		return 'Warning'
+	} else {
+		return 'Success'
+	}
+}
+
+function ExpressServer(adsService, reviewsClient) {
+	const CREATED = 201
+	const NO_CONTENT = 204
+	const NOT_FOUND = 404
 
 	let httpServer
 	const app = express()
 	app.use(bodyParser.json())
 
+
+	const addRatingState = async (ad) => {
+		const averageRating = await reviewsClient.getAverageRating(ad.contact)
+		ad.contactRatingState = determineRatingState(averageRating)
+	}
+
 	app.get('/api/v1/ads', async (req, res) => {
 		const ads = await adsService.getAll()
+		for(let i = 0; i < ads.length; i++) {
+			await addRatingState(ads[i])
+		}
 		res.send(ads)
 	})
 
@@ -21,6 +40,7 @@ function ExpressServer(adsService) {
 		const id = req.params.id
 		const ad = await adsService.getById(id)
 		if (ad) {
+			await addRatingState(ad)
 			return res.send(ad)
 		}
 		return res.status(NOT_FOUND).end()

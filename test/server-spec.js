@@ -1,10 +1,11 @@
 const assert = require('assert')
 const PostgresAdsService = require('../js/postgres-ads-service')
 const ExpressServer = require('../js/express-server')
-const request = require('supertest');
+const request = require('supertest')
 
-const DB_CONNECTION_URI = 'postgres://postgres@localhost:5432/postgres';
-const PORT = 8080;
+const DB_CONNECTION_URI = 'postgres://postgres@localhost:5432/postgres'
+const PORT = 8080
+const REVIEWS_URL = 'http://localhost:9090'
 
 describe('Server', function () {
     let server
@@ -21,7 +22,10 @@ describe('Server', function () {
     }
 
     before(async () => {
-        server = new ExpressServer(new PostgresAdsService(DB_CONNECTION_URI))
+        const reviewsClientMock = {
+            getAverageRating: async () => 4.5
+        }
+        server = new ExpressServer(new PostgresAdsService(DB_CONNECTION_URI), reviewsClientMock)
         server.start(PORT)
         baseUrl = request(`http://localhost:${PORT}`)
         await baseUrl.delete('/api/v1/ads').expect(204)
@@ -70,12 +74,14 @@ describe('Server', function () {
         assert.equal(result.body[0].price, 15.99)
         assert.equal(result.body[0].currency, 'EUR')
         assert.equal(result.body[0].category, 'New')
+        assert.equal(result.body[0].contactRatingState, 'Success')
 
         assert.equal(result.body[1].title, 'Another ad')
         assert.equal(result.body[1].contact, 'john.doe@example.com')
         assert.equal(result.body[1].price, 15.99)
         assert.equal(result.body[1].currency, 'EUR')
         assert.equal(result.body[1].category, 'New')
+        assert.equal(result.body[1].contactRatingState, 'Success')
     })
 
     it('should return the ad with the given id', async () => {
@@ -89,6 +95,7 @@ describe('Server', function () {
         assert.equal(result.body.price, 15.99)
         assert.equal(result.body.currency, 'EUR')
         assert.equal(result.body.category, 'New')
+        assert.equal(result.body.contactRatingState, 'Success')
     })
 
     it('should return 404 - NOT FOUND id ad does not exist', async () => {
@@ -117,7 +124,7 @@ describe('Server', function () {
     })
 
     it('should return 404 - NOT FOUND on update if ad does not exist', async () => {
-        await baseUrl.put(`/api/v1/ads/${-1}`, {}).expect(404)
+        await baseUrl.put(`/api/v1/ads/${-1}`).expect(404)
     })
 
     it('should delete the ad with the given id', async () => {
