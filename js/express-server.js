@@ -22,6 +22,7 @@ function ExpressServer(adsService, reviewsClient) {
 	const app = express()
 	app.use(bodyParser.json())
 
+	app.use(express.static('ui'))
 
 	const addRatingState = async (ad) => {
 		const averageRating = await reviewsClient.getAverageRating(ad.contact)
@@ -30,10 +31,10 @@ function ExpressServer(adsService, reviewsClient) {
 
 	app.get('/api/v1/ads', async (req, res) => {
 		const ads = await adsService.getAll()
-		for(let i = 0; i < ads.length; i++) {
+		for (let i = 0; i < ads.length; i++) {
 			await addRatingState(ads[i])
 		}
-		res.send(ads)
+		res.send({'value': ads})
 	})
 
 	app.get('/api/v1/ads/:id', async (req, res) => {

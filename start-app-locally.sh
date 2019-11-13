@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-./prepare-environment-and-db.sh
+. prepare-environment-and-db.sh
 
 echo "Starting application server"
 if [ "$1" = "debug" ]
