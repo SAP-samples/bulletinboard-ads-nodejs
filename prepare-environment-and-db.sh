@@ -18,5 +18,6 @@ fi
 export VCAP_SERVICES='{"postgresql":[{"credentials":{"uri":"postgres://postgres@localhost:5432/postgres"}}]}'
 export PORT='8080'
 export REVIEWS_HOST='http://localhost:9090'
+export REVIEWS_HOST_INTERNAL='http://localhost:9090'
 
 echo "Postgres is ready & environment variables are set"

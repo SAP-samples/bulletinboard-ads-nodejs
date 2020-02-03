@@ -25,7 +25,7 @@ describe('Server', function () {
         const reviewsClientMock = {
             getAverageRating: async () => 4.5
         }
-        server = new ExpressServer(new PostgresAdsService(DB_CONNECTION_URI), reviewsClientMock)
+        server = new ExpressServer(new PostgresAdsService(DB_CONNECTION_URI), reviewsClientMock, REVIEWS_URL)
         server.start(PORT)
         baseUrl = request(`http://localhost:${PORT}`)
         await baseUrl.delete('/api/v1/ads').expect(204)
@@ -66,22 +66,24 @@ describe('Server', function () {
         await createAd('Another ad')
 
         const result = await baseUrl.get('/api/v1/ads').expect(200)
-        assert(result.body.length, 2)
+        assert(result.body.value.length, 2)
         assert(result.headers['content-type'], 'application/json; charset=utf-8')
 
-        assert.equal(result.body[0].title, 'My new ad')
-        assert.equal(result.body[0].contact, 'john.doe@example.com')
-        assert.equal(result.body[0].price, 15.99)
-        assert.equal(result.body[0].currency, 'EUR')
-        assert.equal(result.body[0].category, 'New')
-        assert.equal(result.body[0].contactRatingState, 'Success')
+        assert.equal(result.body.value[0].title, 'My new ad')
+        assert.equal(result.body.value[0].contact, 'john.doe@example.com')
+        assert.equal(result.body.value[0].price, 15.99)
+        assert.equal(result.body.value[0].currency, 'EUR')
+        assert.equal(result.body.value[0].category, 'New')
+        assert.equal(result.body.value[0].reviewsUrl, `${REVIEWS_URL}/#/reviews/john.doe@example.com`)
+        assert.equal(result.body.value[0].contactRatingState, 'Success')
 
-        assert.equal(result.body[1].title, 'Another ad')
-        assert.equal(result.body[1].contact, 'john.doe@example.com')
-        assert.equal(result.body[1].price, 15.99)
-        assert.equal(result.body[1].currency, 'EUR')
-        assert.equal(result.body[1].category, 'New')
-        assert.equal(result.body[1].contactRatingState, 'Success')
+        assert.equal(result.body.value[1].title, 'Another ad')
+        assert.equal(result.body.value[1].contact, 'john.doe@example.com')
+        assert.equal(result.body.value[1].price, 15.99)
+        assert.equal(result.body.value[1].currency, 'EUR')
+        assert.equal(result.body.value[1].category, 'New')
+        assert.equal(result.body.value[0].reviewsUrl, `${REVIEWS_URL}/#/reviews/john.doe@example.com`)
+        assert.equal(result.body.value[1].contactRatingState, 'Success')
     })
 
     it('should return the ad with the given id', async () => {

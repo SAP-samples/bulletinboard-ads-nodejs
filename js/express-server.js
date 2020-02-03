@@ -13,7 +13,7 @@ const determineRatingState = (rating) => {
 	}
 }
 
-function ExpressServer(adsService, reviewsClient) {
+function ExpressServer(adsService, reviewsClient, reviewsHost) {
 	const CREATED = 201
 	const NO_CONTENT = 204
 	const NOT_FOUND = 404
@@ -29,9 +29,14 @@ function ExpressServer(adsService, reviewsClient) {
 		ad.contactRatingState = determineRatingState(averageRating)
 	}
 
+	const addReviewsUrl = (ad) => {
+		ad.reviewsUrl = `${reviewsHost}/#/reviews/${ad.contact}`;
+	}
+
 	app.get('/api/v1/ads', async (req, res) => {
 		const ads = await adsService.getAll()
 		for (let i = 0; i < ads.length; i++) {
+			addReviewsUrl(ads[i])
 			await addRatingState(ads[i])
 		}
 		res.send({'value': ads})
