@@ -10,7 +10,7 @@
     "test:debug": "node_modules/mocha/bin/mocha --inspect-brk"
   },
   "engines": {
-    "node": "8.12.x"
+    "node": "12.14.x"
   },
   "author": "",
   "license": "ISC",
