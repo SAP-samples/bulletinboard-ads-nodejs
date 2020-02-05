@@ -16,6 +16,7 @@ const determineRatingState = (rating) => {
 function ExpressServer(adsService, reviewsClient, reviewsHost) {
 	const CREATED = 201
 	const NO_CONTENT = 204
+	const BAD_REQUEST = 400
 	const NOT_FOUND = 404
 
 	let httpServer
@@ -54,7 +55,10 @@ function ExpressServer(adsService, reviewsClient, reviewsHost) {
 
 	app.post('/api/v1/ads', async (req, res) => {
 		const ad = await adsService.createAd(req.body)
-		res.status(CREATED).header('location', `/api/v1/ads/${ad.id}`).send(ad)
+		if (ad.title && ad.contact && ad.price && ad.currency) {
+			return res.status(CREATED).header('location', `/api/v1/ads/${ad.id}`).send(ad)
+		}
+		return res.status(BAD_REQUEST).end()
 	})
 
 	app.put('/api/v1/ads/:id', async (req, res) => {

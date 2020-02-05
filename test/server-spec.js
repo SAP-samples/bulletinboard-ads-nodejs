@@ -104,6 +104,40 @@ describe('Server', function () {
         await baseUrl.get(`/api/v1/ads/${-1}`).expect(404)
     })
 
+    it('should return 400 - BAD REQUEST on invalid input', async () => {
+        await baseUrl.post('/api/v1/ads').send({
+            'title': '',
+            'contact': 'john.doe@example.com',
+            'price': 15.99,
+            'currency': 'EUR',
+            'category': 'New'
+        }).expect(400)
+
+        await baseUrl.post('/api/v1/ads').send({
+            'title': 'My new ad',
+            'contact': '',
+            'price': 15.99,
+            'currency': 'EUR',
+            'category': 'New'
+        }).expect(400)
+
+        await baseUrl.post('/api/v1/ads').send({
+            'title': 'My new ad',
+            'contact': 'john.doe@example.com',
+            'price': null,
+            'currency': 'EUR',
+            'category': 'New'
+        }).expect(400)
+
+        await baseUrl.post('/api/v1/ads').send({
+            'title': 'My new ad',
+            'contact': 'john.doe@example.com',
+            'price': 15.99,
+            'currency': '',
+            'category': 'New'
+        }).expect(400)
+    })
+
     it('should update the ad with the given id', async () => {
         let result = await createAd()
         const id = result.body.id
