@@ -5,7 +5,7 @@ const PostgresAdsService = require('./postgres-ads-service')
 const ReviewsClient = require('./reviews-client')
 const VCAP_SERVICES = process.env.VCAP_SERVICES
 const REVIEWS_HOST = process.env.REVIEWS_HOST
-const REVIEWS_HOST_INTERNAL = process.env.REVIEWS_HOST_INTERNAL;
+const REVIEWS_HOST_INTERNAL = process.env.REVIEWS_HOST_INTERNAL || REVIEWS_HOST;
 let DB_CONNECTION_URI  = process.env.POSTGRES_URI
 
 if (VCAP_SERVICES) {
