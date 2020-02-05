@@ -45,7 +45,7 @@ function PostgresAdsService(dbConnectionUri) {
         ($1, $2, $3, $4, $5, $6) WHERE id = $7 RETURNING *`
         const values = [ad.title, ad.contact, ad.price, ad.currency, ad.category, new Date(), id]
         const result = await pool.query(statement, values)
-        return result.rows
+        return result.rows[0]
     }
 
     this.deleteAll = async () => {

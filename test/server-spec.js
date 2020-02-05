@@ -9,6 +9,7 @@ const REVIEWS_URL = 'http://localhost:9090'
 
 describe('Server', function () {
     let server
+    let db
     let baseUrl
 
     const createAd = (title = '') => {
@@ -25,7 +26,8 @@ describe('Server', function () {
         const reviewsClientMock = {
             getAverageRating: async () => 4.5
         }
-        server = new ExpressServer(new PostgresAdsService(DB_CONNECTION_URI), reviewsClientMock, REVIEWS_URL)
+        db = new PostgresAdsService(DB_CONNECTION_URI)
+        server = new ExpressServer(db, reviewsClientMock, REVIEWS_URL)
         server.start(PORT)
         baseUrl = request(`http://localhost:${PORT}`)
         await baseUrl.delete('/api/v1/ads').expect(204)
@@ -53,6 +55,8 @@ describe('Server', function () {
         assert.equal(result.body.price, 15.99)
         assert.equal(result.body.currency, 'EUR')
         assert.equal(result.body.category, 'New')
+        assert.equal(result.body.reviewsUrl, `${REVIEWS_URL}/#/reviews/john.doe@example.com`)
+        assert.equal(result.body.contactRatingState, 'Success')
         assert(result.body.createdAt)
         assert(!result.body.modifiedAt)
 
@@ -97,6 +101,7 @@ describe('Server', function () {
         assert.equal(result.body.price, 15.99)
         assert.equal(result.body.currency, 'EUR')
         assert.equal(result.body.category, 'New')
+        assert.equal(result.body.reviewsUrl, `${REVIEWS_URL}/#/reviews/john.doe@example.com`)
         assert.equal(result.body.contactRatingState, 'Success')
     })
 
@@ -136,31 +141,85 @@ describe('Server', function () {
             'currency': '',
             'category': 'New'
         }).expect(400)
+
+        const entriesInDb = await db.getAll()
+        assert.equal(entriesInDb.length, 0)
     })
 
     it('should update the ad with the given id', async () => {
         let result = await createAd()
         const id = result.body.id
 
-        await baseUrl.put(`/api/v1/ads/${id}`).send({
+        result = await baseUrl.put(`/api/v1/ads/${id}`).send({
             'title': 'Updated ad',
             'contact': 'updated.doe@example.com',
             'price': 11.99,
             'currency': 'USD',
             'category': 'Newer'
         }).expect(200)
-        result = await baseUrl.get(`/api/v1/ads/${id}`).expect(200)
 
         assert.equal(result.body.title, 'Updated ad')
         assert.equal(result.body.contact, 'updated.doe@example.com')
         assert.equal(result.body.price, 11.99)
         assert.equal(result.body.currency, 'USD')
         assert.equal(result.body.category, 'Newer')
+        assert.equal(result.body.reviewsUrl, `${REVIEWS_URL}/#/reviews/updated.doe@example.com`)
+        assert.equal(result.body.contactRatingState, 'Success')
         assert(result.body.modifiedAt)
     })
 
     it('should return 404 - NOT FOUND on update if ad does not exist', async () => {
-        await baseUrl.put(`/api/v1/ads/${-1}`).expect(404)
+        await baseUrl.put(`/api/v1/ads/${-1}`).send({
+            'title': 'My updated ad',
+            'contact': 'updated.doe@example.com',
+            'price': 11.99,
+            'currency': 'USD',
+            'category': 'Newer'
+        }).expect(404)
+    })
+
+    it('should return 400 - BAD REQUEST on invalid input', async () => {
+        let result = await createAd()
+        const id = result.body.id
+
+        await baseUrl.put(`/api/v1/ads/${id}`).send({
+            'title': '',
+            'contact': 'updated.doe@example.com',
+            'price': 11.99,
+            'currency': 'USD',
+            'category': 'Newer'
+        }).expect(400)
+
+        await baseUrl.put(`/api/v1/ads/${id}`).send({
+            'title': 'Updated ad',
+            'contact': '',
+            'price': 11.99,
+            'currency': 'USD',
+            'category': 'Newer'
+        }).expect(400)
+
+        await baseUrl.put(`/api/v1/ads/${id}`).send({
+            'title': 'Updated ad',
+            'contact': 'updated.doe@example.com',
+            'price': null,
+            'currency': 'USD',
+            'category': 'Newer'
+        }).expect(400)
+
+        await baseUrl.put(`/api/v1/ads/${id}`).send({
+            'title': 'Updated ad',
+            'contact': 'updated.doe@example.com',
+            'price': 11.99,
+            'currency': '',
+            'category': 'Newer'
+        }).expect(400)
+
+        const entryInDb = await db.getById(id)
+        assert.equal(entryInDb.title, 'My new ad')
+        assert.equal(entryInDb.contact, 'john.doe@example.com')
+        assert.equal(entryInDb.price, 15.99)
+        assert.equal(entryInDb.currency, 'EUR')
+        assert.equal(entryInDb.category, 'New')
     })
 
     it('should delete the ad with the given id', async () => {

@@ -47,6 +47,7 @@ function ExpressServer(adsService, reviewsClient, reviewsHost) {
 		const id = req.params.id
 		const ad = await adsService.getById(id)
 		if (ad) {
+			addReviewsUrl(ad)
 			await addRatingState(ad)
 			return res.send(ad)
 		}
@@ -54,21 +55,30 @@ function ExpressServer(adsService, reviewsClient, reviewsHost) {
 	})
 
 	app.post('/api/v1/ads', async (req, res) => {
-		const ad = await adsService.createAd(req.body)
+		const ad = req.body;
 		if (ad.title && ad.contact && ad.price && ad.currency) {
-			return res.status(CREATED).header('location', `/api/v1/ads/${ad.id}`).send(ad)
+			const savedAd = await adsService.createAd(ad)
+			addReviewsUrl(savedAd)
+			await addRatingState(savedAd)
+			return res.status(CREATED).header('location', `/api/v1/ads/${savedAd.id}`).send(savedAd)
 		}
 		return res.status(BAD_REQUEST).end()
 	})
 
 	app.put('/api/v1/ads/:id', async (req, res) => {
 		const id = req.params.id
-		const ad = await adsService.getById(id)
-		if (ad) {
-			await adsService.updateAd(id, req.body)
-			return res.end()
+		const updateValues = req.body
+		if (updateValues.title && updateValues.contact && updateValues.price && updateValues.currency) {
+			const ad = await adsService.getById(id)
+			if (ad) {
+				const updatedAd = await adsService.updateAd(id, req.body)
+				addReviewsUrl(updatedAd)
+				await addRatingState(updatedAd)
+				return res.send(updatedAd)
+			}
+			return res.status(NOT_FOUND).end()
 		}
-		return res.status(NOT_FOUND).end()
+		return res.status(BAD_REQUEST).end()
 	})
 
 	app.delete('/api/v1/ads', async (req, res) => {
