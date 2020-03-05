@@ -15,7 +15,13 @@ function PostgresAdsService(dbConnectionUri) {
         "createdAt" TIMESTAMP,
         "modifiedAt" TIMESTAMP)`
 
-    const tableInitialized = pool.query(CREATE_SQL)
+    const tableInitialized = pool.query(CREATE_SQL).then(function () {
+        console.log("Database connection established")
+    }).catch(function(error) {
+        console.error(`Could not establish database connection: '${dbConnectionUri}'`)
+        console.error(error.stack)
+        process.exit(1)
+    })
 
     this.getAll = async () => {
         await tableInitialized
@@ -24,6 +30,7 @@ function PostgresAdsService(dbConnectionUri) {
     }
 
     this.getById = async (id) => {
+        await tableInitialized
         const ads = await pool.query('SELECT * FROM "advertisements" WHERE id = $1', [id])
         return ads.rows[0] || null
     }
