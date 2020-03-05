@@ -3,8 +3,8 @@ const PostgresAdsService = require('../js/postgres-ads-service')
 const ExpressServer = require('../js/express-server')
 const request = require('supertest')
 
-const DB_CONNECTION_URI = 'postgres://postgres@localhost:5432/postgres'
-const PORT = 8080
+const DB_CONNECTION_URI = 'postgres://postgres@localhost:5432/testdb'
+const PORT = 8081
 const REVIEWS_URL = 'http://localhost:9090'
 
 describe('Server', function () {
