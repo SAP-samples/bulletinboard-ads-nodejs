@@ -3,9 +3,7 @@ This is the Advertisements service of the bulletin board application.
 
 ## How to work locally
 
-Use the script `prepare-environment-and-db.sh`. This script will:
-- start a local database (using Docker)
-- set the environment accordingly so the application can connect to the DB
+Before starting or testing the app, use the script `start-db.sh` to start the postgres database in a docker container.
 
 Run `npm test` to execute the test suite.
 
