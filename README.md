@@ -1,23 +1,27 @@
 # bulletinboard-ads
-This is the Advertisements service of the bulletin board application.
-
-## How to work locally
-
-Before starting or testing the app, use the script `start-db.sh` to start the postgres database in a docker container.
-
-Run `npm test` to execute the test suite.
-
-If you want to start the app, run `npm start`.
-
-_If you work on Windows, you might run into issues with hanging processes after killing the script with CTRL+C. This can be avoided by using a different shell: <YOUR_GIT_INSTALLATION_DIRECTORY>\bin\sh.exe (This is NOT the git bash started when using the shortcut!). You could also configure your IDE to use this shell as the default terminal._
-
-## How to work in the cloud (with Cloud Foundry (CF))
-
-Create a CF account & *login to your org and space*.
-You should already have a running `bulletinboard-reviews` app before you deploy your application (otherwise ads cannot be displayed or created).
-Make sure the exposed URI matches the `REVIEWS_HOST` environment variable in [manifest.yaml](manifest.yaml).
-Run script `deploy-to-cf.sh`. This will create a postgres db instance and push your app to CF.
+This is the **node.js** version of the advertisements-service for the bulletin board application.
+Advertisements can be created, deleted and viewed.
+You can interact with the service using a REST client like Postman or the GUI.
 
 ## Relation to 'bulletinboard-reviews'
+If a user got poor ratings from previous reviews, or hasn't received any reviews yet, the user is considered not trustworthy and will be colored red.
 
-If a user got poor ratings from previous reviews, or hasn't received any reviews yet, the user is considered untrusted and will be colored red.
+## How to work locally
+To execute the tests or to start the service a local database is needed.
+The script `start-db.sh` can be used to start a local database (using docker).
+
+### Execute tests
+The tests can be executed with npm: `npm test`
+
+### Start service locally
+Run `npm start` to start the service.
+The service will listen on port 8080.
+
+## A word on cloud readiness
+
+### CloudFoundry
+To speed a up the configuration for a deployment in CloudFoundry a [manifest.yaml](manifest.yaml) is provided.
+
+### Kubernetes
+For a deployment of the service in Kubernetes a pre-configured yaml-file ([k8s-minimal.yaml](k8s-minimal.yaml)) is already part of the repository.
+Along with a basic [Dockerfile](Dockerfile).
