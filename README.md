@@ -27,3 +27,84 @@ To speed a up the configuration for a deployment in CloudFoundry a [manifest.yam
 ### Kubernetes
 For a deployment of the service in Kubernetes a pre-configured yaml-file ([k8s-minimal.yaml](k8s-minimal.yaml)) is already part of the repository.
 Along with a basic [Dockerfile](Dockerfile).
+
+## Interact with the application
+
+### Using the API
+The following endpoints are supported and tested (remember to set the `application/json` content-type header):
+- `GET /api/v1/ads`: get all ads
+  Response: `200 OK`
+  Response Body:
+```
+    [
+        {
+            "id": <int>,
+            "title": <text>,
+            "price": <number>,
+            "contact": "<text>",
+            "contactRatingState": <text>, //correlates to the average rating from the reviews service
+            "currency": <text>,
+            "category": <text>,
+            "purchasedOn": <date>,
+            "metadata": {
+                "createdAt": <date>,
+                "modifiedAt": <date>,
+                "version": <int>
+            },
+            "reviewsUrl": <text> //redirectUrl
+        },
+        ...
+    ]
+```
+- `GET /api/v1/ads/:id`: get single ad
+  Response: `200 OK`
+```
+    {
+        "id": <int>,
+        "title": <text>,
+        "price": <number>,
+        "contact": "<text>",
+        "contactRatingState": <text>, //correlates to the average rating from the reviews service
+        "currency": <text>,
+        "category": <text>,
+        "purchasedOn": <date>,
+        "metadata": {
+            "createdAt": <date>,
+            "modifiedAt": <date>,
+            "version": <int>
+        },
+        "reviewsUrl": <text> //redirectUrl
+    }
+```
+- `GET /api/v1/ads/:id`: get single ad
+  Response: `200 OK`
+- `POST /api/v1/ads`: post a new ad
+  Request Body:
+```
+    {
+        "title": <text>,
+        "currency": <text>,
+        "price": <number>,
+        "contact": <text>,
+        "category": <text>,     //optional
+        "purchasedOn": <date>   //optional
+    }
+```
+- `PUT /api/v1/ads/:id`: update an ad
+  Request Body:
+```
+    {
+        "id": <int>,
+        "title": <text>,
+        "currency": <text>,
+        "price": <number>,
+        "contact": <text>,
+        "category": <text>,   //optional
+        "purchasedOn": <date> //optional
+    }
+```
+  Response: `201 Created`
+- `DELETE /api/v1/ads`: delete all ads
+  Response: `204 No Content`
+
+
