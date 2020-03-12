@@ -22,10 +22,10 @@ The service will listen on port 8080.
 ## A word on cloud readiness
 
 ### CloudFoundry
-To speed a up the configuration for a deployment in CloudFoundry a [manifest.yaml](manifest.yaml) is provided.
+To speed a up the configuration for a deployment in CloudFoundry a [manifest.yaml](manifest.yaml) with placeholders is provided.
 
 ### Kubernetes
-For a deployment of the service in Kubernetes a pre-configured yaml-file ([k8s-minimal.yaml](k8s-minimal.yaml)) is already part of the repository.
+For a deployment of the service in Kubernetes a pre-configured yaml-file ([k8s-minimal.yaml](k8s-minimal.yaml)) with placeholders is already part of the repository.
 Along with a basic [Dockerfile](Dockerfile).
 
 ## Interact with the application
