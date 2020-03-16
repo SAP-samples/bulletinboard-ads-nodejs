@@ -1,5 +1,5 @@
 # bulletinboard-ads
-This is the **node.js** version of the advertisements-service for the bulletin board application.
+This is the **Node.js** version of the advertisements-service for the bulletin board application.
 Advertisements can be created, deleted and viewed.
 You can interact with the service using a REST client like Postman or the GUI.
 
@@ -8,7 +8,7 @@ If a user got poor ratings from previous reviews, or hasn't received any reviews
 
 ## How to work locally
 To execute the tests or to start the service a local database is needed.
-The script `start-db.sh` can be used to start a local database (using docker).
+The script `start-db.sh` can be used to start a local database (using Docker).
 
 Also the dependencies need to be installed. Run `npm install` to install those.
 
@@ -21,8 +21,8 @@ The service will listen on port 8080.
 
 ## A word on cloud readiness
 
-### CloudFoundry
-To speed a up the configuration for a deployment in CloudFoundry a [manifest.yaml](manifest.yaml) with placeholders is provided.
+### Cloud Foundry
+To speed a up the configuration for a deployment in Cloud Foundry a [manifest.yaml](manifest.yaml) with placeholders is provided.
 
 ### Kubernetes
 For a deployment of the service in Kubernetes a pre-configured yaml-file ([k8s-minimal.yaml](k8s-minimal.yaml)) with placeholders is already part of the repository.

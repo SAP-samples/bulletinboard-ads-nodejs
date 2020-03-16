@@ -9,4 +9,4 @@ applications:
     services:
       - postgres-bulletinboard-ads
     env:
-      REVIEWS_HOST: 'https://[REVIEWS-URL]'
+      REVIEWS_HOST: '[https|http]://[REVIEWS-URL]'
