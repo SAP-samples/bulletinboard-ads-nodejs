@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node js/main.js",
     "start:debug": "node --inspect-brk js/main.js",
-    "test": "node_modules/mocha/bin/mocha",
-    "test:debug": "node_modules/mocha/bin/mocha --inspect-brk"
+    "test": "node node_modules/mocha/bin/mocha",
+    "test:debug": "node node_modules/mocha/bin/mocha --inspect-brk"
   },
   "engines": {
     "node": "12.14.x"

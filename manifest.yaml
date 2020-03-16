@@ -2,11 +2,11 @@ applications:
   - name: bulletinboard-ads
     memory: 80MB
     command: npm start
-    routes: 
-      - route: bulletinboard-ads-cnb.cfapps.sap.hana.ondemand.com
+    routes:
+      - route: '[UNIQUE-HOSTNAME].[DOMAIN]'
     buildpacks:
       - https://github.com/cloudfoundry/nodejs-buildpack
     services:
       - postgres-bulletinboard-ads
     env:
-      REVIEWS_HOST: 'https://bulletinboard-reviews-node-cnb.cfapps.sap.hana.ondemand.com'
+      REVIEWS_HOST: '[https|http]://[REVIEWS-URL]'
