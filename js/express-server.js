@@ -8,16 +8,6 @@ const NO_CONTENT = 204
 const BAD_REQUEST = 400
 const NOT_FOUND = 404
 
-const determineRatingState = (rating) => {
-    if (rating < 2) {
-        return 'Error'
-    } else if (rating < 4) {
-        return 'Warning'
-    } else {
-        return 'Success'
-    }
-}
-
 function ExpressServer(adsService, reviewsClient, reviewsHost) {
 
     let httpServer
@@ -27,8 +17,7 @@ function ExpressServer(adsService, reviewsClient, reviewsHost) {
     app.use(express.static('ui'))
 
     const addRatingState = async (ad) => {
-        const averageRating = await reviewsClient.getAverageRating(ad.contact)
-        ad.contactRatingState = determineRatingState(averageRating)
+        ad.averageRating = await reviewsClient.getAverageRating(ad.contact)
     }
 
     const addReviewsUrl = (ad) => {

@@ -1,10 +1,13 @@
 sap.ui.define([
 	"sap/demo/bulletinboard/controller/BaseController",
+	"sap/demo/bulletinboard/model/formatter",
 	"sap/m/MessageToast"
-], function(BaseController, MessageToast) {
+], function(BaseController, formatter, MessageToast) {
 	"use strict";
 
 	return BaseController.extend("sap.demo.bulletinboard.controller.Advertisements", {
+
+		formatter: formatter,
 
 		_getCategories : function() {
 			var aCategories = [];

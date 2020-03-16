@@ -45,6 +45,16 @@ sap.ui.define([
 
 				var oDate = new Date(isoDateTime);
 				return DateFormat.getDateTimeInstance({ style : "medium" }).format(oDate, false);
+			},
+
+			formatStatus: function (rating) {
+				if (rating < 2) {
+					return 'Error'
+				} else if (rating < 4) {
+					return 'Warning'
+				} else {
+					return 'Success'
+				}
 			}
 		};
 
