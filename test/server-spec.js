@@ -56,7 +56,7 @@ describe('Server', function () {
         assert.equal(result.body.currency, 'EUR')
         assert.equal(result.body.category, 'New')
         assert.equal(result.body.reviewsUrl, `${REVIEWS_URL}/#/reviews/john.doe@example.com`)
-        assert.equal(result.body.contactRatingState, 'Success')
+        assert.equal(result.body.averageRating, 4.5)
         assert(result.body.createdAt)
         assert(!result.body.modifiedAt)
 
@@ -79,7 +79,7 @@ describe('Server', function () {
         assert.equal(result.body.value[0].currency, 'EUR')
         assert.equal(result.body.value[0].category, 'New')
         assert.equal(result.body.value[0].reviewsUrl, `${REVIEWS_URL}/#/reviews/john.doe@example.com`)
-        assert.equal(result.body.value[0].contactRatingState, 'Success')
+        assert.equal(result.body.value[0].averageRating, 4.5)
 
         assert.equal(result.body.value[1].title, 'Another ad')
         assert.equal(result.body.value[1].contact, 'john.doe@example.com')
@@ -87,7 +87,7 @@ describe('Server', function () {
         assert.equal(result.body.value[1].currency, 'EUR')
         assert.equal(result.body.value[1].category, 'New')
         assert.equal(result.body.value[0].reviewsUrl, `${REVIEWS_URL}/#/reviews/john.doe@example.com`)
-        assert.equal(result.body.value[1].contactRatingState, 'Success')
+        assert.equal(result.body.value[1].averageRating, 4.5)
     })
 
     it('should return the ad with the given id', async () => {
@@ -102,7 +102,7 @@ describe('Server', function () {
         assert.equal(result.body.currency, 'EUR')
         assert.equal(result.body.category, 'New')
         assert.equal(result.body.reviewsUrl, `${REVIEWS_URL}/#/reviews/john.doe@example.com`)
-        assert.equal(result.body.contactRatingState, 'Success')
+        assert.equal(result.body.averageRating, 4.5)
     })
 
     it('should return 404 - NOT FOUND id ad does not exist', async () => {
@@ -164,7 +164,7 @@ describe('Server', function () {
         assert.equal(result.body.currency, 'USD')
         assert.equal(result.body.category, 'Newer')
         assert.equal(result.body.reviewsUrl, `${REVIEWS_URL}/#/reviews/updated.doe@example.com`)
-        assert.equal(result.body.contactRatingState, 'Success')
+        assert.equal(result.body.averageRating, 4.5)
         assert(result.body.modifiedAt)
     })
 
