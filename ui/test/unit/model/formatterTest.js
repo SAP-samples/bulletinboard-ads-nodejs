@@ -62,5 +62,30 @@ sap.ui.require(
 			assert.equal(sTime, sSomeTime, "The datetime was correctly created and formatted. Datetime string matches the reference datetime string: " + sSomeTime);
 		});
 
+		/* formatStatus */
+		QUnit.test("Should resolve to Error on low rating", function (assert) {
+			var oSomeRating = 1;
+			// Act
+			var infoState = formatter.formatStatus(oSomeRating);
+			// Assert
+			assert.equal(infoState, "Error", "The infoState was correctly parsed to Error");
+		});
+
+		QUnit.test("Should resolve to Warning on mediocre rating", function (assert) {
+			var oSomeRating = 2;
+			// Act
+			var infoState = formatter.formatStatus(oSomeRating);
+			// Assert
+			assert.equal(infoState, "Warning", "The infoState was correctly parsed to Warning");
+		});
+
+		QUnit.test("Should resolve to Success on good rating", function (assert) {
+			var oSomeRating = 4;
+			// Act
+			var infoState = formatter.formatStatus(oSomeRating);
+			// Assert
+			assert.equal(infoState, "Success", "The infoState was correctly parsed to Success");
+		});
+
 	}
 );
