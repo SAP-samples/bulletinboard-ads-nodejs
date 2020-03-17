@@ -11,7 +11,7 @@
 			<TileContainer id="AdTiles" tiles="{/value}" tileDelete="handleAdsDelete">
 				<StandardTile number="{price}" numberUnit="{currency}"
 					title="{title}" info="{contact}" 
-                    infoState='{"path":"averageRating","formatter": ".formatter.formatStatus"}' press="onSelectAd" />
+                    infoState='{"path":"averageContactRating","formatter": ".formatter.formatStatus"}' press="onSelectAd" />
 			</TileContainer>
 		</semantic:content>
 

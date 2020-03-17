@@ -24,7 +24,7 @@ function ExpressServer(adsService, reviewsClient, reviewsHost) {
         const ads = await adsService.getAll()
         for (let i = 0; i < ads.length; i++) {
             addReviewsUrl(ads[i])
-            ads[i].averageRating = await reviewsClient.getAverageRating(ads[i].contact)
+            ads[i].averageContactRating = await reviewsClient.getAverageRating(ads[i].contact)
         }
         res.send({'value': ads})
     }))
@@ -34,7 +34,7 @@ function ExpressServer(adsService, reviewsClient, reviewsHost) {
         const ad = await adsService.getById(id)
         if (ad) {
             addReviewsUrl(ad)
-            ad.averageRating = await reviewsClient.getAverageRating(ad.contact)
+            ad.averageContactRating = await reviewsClient.getAverageRating(ad.contact)
             return res.send(ad)
         }
         return res.status(NOT_FOUND).end()
@@ -45,7 +45,7 @@ function ExpressServer(adsService, reviewsClient, reviewsHost) {
         if (ad.title && ad.contact && ad.price && ad.currency) {
             const savedAd = await adsService.createAd(ad)
             addReviewsUrl(savedAd)
-            savedAd.averageRating = await reviewsClient.getAverageRating(savedAd.contact)
+            savedAd.averageContactRating = await reviewsClient.getAverageRating(savedAd.contact)
             return res.status(CREATED).header('location', `/api/v1/ads/${savedAd.id}`).send(savedAd)
         }
         return res.status(BAD_REQUEST).end()
@@ -59,7 +59,7 @@ function ExpressServer(adsService, reviewsClient, reviewsHost) {
             if (ad) {
                 const updatedAd = await adsService.updateAd(id, req.body)
                 addReviewsUrl(updatedAd)
-                updatedAd.averageRating = await reviewsClient.getAverageRating(updatedAd.contact)
+                updatedAd.averageContactRating = await reviewsClient.getAverageRating(updatedAd.contact)
                 return res.send(updatedAd)
             }
             return res.status(NOT_FOUND).end()
