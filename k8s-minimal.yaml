@@ -14,7 +14,7 @@ spec:
     - containerPort: 8080
     env:
     - name: POSTGRES_URI
-      value: postgres://postgres@postgres-ads:5432/postgres
+      value: postgres://postgres:postgrespassword@postgres-ads:5432/postgres
     - name: REVIEWS_HOST
       value: http://localhost:9090
     - name: REVIEWS_HOST_INTERNAL
@@ -56,6 +56,9 @@ spec:
     volumeMounts:
     - name: storage
       mountPath: /data/db
+    env:
+    - name: POSTGRES_PASSWORD
+      value: postgrespassword
   volumes:
     - name: storage
       persistentVolumeClaim:
