@@ -23,11 +23,10 @@ describe('Server', function () {
     }
 
     before(async () => {
-        const reviewsClientMock = {
-            getAverageRating: async () => 4.5
-        }
-        db = new PostgresAdsService(DB_CONNECTION_URI)
-        server = new ExpressServer(db, reviewsClientMock, REVIEWS_URL)
+        const loggerMock = { info: () => { } }
+        const reviewsClientMock = { getAverageRating: async () => 4.5 }
+        db = new PostgresAdsService(DB_CONNECTION_URI, loggerMock)
+        server = new ExpressServer(db, reviewsClientMock, REVIEWS_URL, loggerMock)
         server.start(PORT)
         baseUrl = request(`http://localhost:${PORT}`)
         await baseUrl.delete('/api/v1/ads').expect(204)
@@ -225,7 +224,7 @@ describe('Server', function () {
     it('should delete the ad with the given id', async () => {
         const result = await createAd()
         const id = result.body.id
-        
+
         await baseUrl.delete(`/api/v1/ads/${id}`).expect(204)
         await baseUrl.get(`/api/v1/ads/${id}`).expect(404)
     })

@@ -2,7 +2,7 @@
 
 const pg = require('pg')
 
-function PostgresAdsService(dbConnectionUri) {
+function PostgresAdsService(dbConnectionUri, defaultLogger) {
 
     const pool = new pg.Pool({ 'connectionString': dbConnectionUri })
     const CREATE_SQL = `CREATE TABLE IF NOT EXISTS "advertisements" (
@@ -16,10 +16,9 @@ function PostgresAdsService(dbConnectionUri) {
         "modifiedAt" TIMESTAMP)`
 
     const tableInitialized = pool.query(CREATE_SQL).then(function () {
-        console.log("Database connection established")
+        defaultLogger.info('Database connection established')
     }).catch(function(error) {
-        console.error(`Could not establish database connection: '${dbConnectionUri}'`)
-        console.error(error.stack)
+        defaultLogger.error(error.stack)
         process.exit(1)
     })
 
@@ -31,7 +30,7 @@ function PostgresAdsService(dbConnectionUri) {
 
     this.getById = async (id) => {
         await tableInitialized
-        const ads = await pool.query('SELECT * FROM "advertisements" WHERE id = $1', [id])
+        const ads = await pool.query('SELECT * FROM "advertisements" WHERE "id" = $1', [id])
         return ads.rows[0] || null
     }
 
@@ -49,7 +48,7 @@ function PostgresAdsService(dbConnectionUri) {
         await tableInitialized
         const statement = `UPDATE "advertisements" SET 
         ("title", "contact", "price", "currency", "category", "modifiedAt") =
-        ($1, $2, $3, $4, $5, $6) WHERE id = $7 RETURNING *`
+        ($1, $2, $3, $4, $5, $6) WHERE "id" = $7 RETURNING *`
         const values = [ad.title, ad.contact, ad.price, ad.currency, ad.category, new Date(), id]
         const result = await pool.query(statement, values)
         return result.rows[0]
@@ -62,7 +61,7 @@ function PostgresAdsService(dbConnectionUri) {
 
     this.deleteById = async (id) => {
         await tableInitialized
-        return pool.query('DELETE FROM "advertisements" WHERE id = $1', [id])
+        return pool.query('DELETE FROM "advertisements" WHERE "id" = $1', [id])
     }
 
     this.stop = async () => {
