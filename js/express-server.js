@@ -86,6 +86,7 @@ function ExpressServer(adsService, reviewsClient, reviewsHost, defaultLogger) {
     }))
 
     this.start = (port) => {
+        //REVISE are we listening too early - what if the DB is not yet connected?
         httpServer = app.listen(port).on('error', function (error) {
             defaultLogger.error(error.stack)
             process.exit(2)
@@ -102,7 +103,7 @@ function ExpressServer(adsService, reviewsClient, reviewsHost, defaultLogger) {
 //wraps the middleware with a try catch and injects a logger as additional argument
 const wrap = (wrappedMiddleware) => {
     return async (req, res, next) => {
-		const requestLogger = logger.create()
+        const requestLogger = logger.create()
         try {
             await wrappedMiddleware(req, res, next, requestLogger)
         } catch (error) {

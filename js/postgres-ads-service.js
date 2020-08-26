@@ -2,7 +2,7 @@
 
 const pg = require('pg')
 
-function PostgresAdsService(dbConnectionUri, defaultLogger) {
+function PostgresAdsService(dbConnectionUri, logger) {
 
     const pool = new pg.Pool({ 'connectionString': dbConnectionUri })
     const CREATE_SQL = `CREATE TABLE IF NOT EXISTS "advertisements" (
@@ -16,9 +16,9 @@ function PostgresAdsService(dbConnectionUri, defaultLogger) {
         "modifiedAt" TIMESTAMP)`
 
     const tableInitialized = pool.query(CREATE_SQL).then(function () {
-        defaultLogger.info('Database connection established')
+        logger.info('Database connection established')
     }).catch(function(error) {
-        defaultLogger.error(error.stack)
+        logger.error(error.stack)
         process.exit(1)
     })
 
