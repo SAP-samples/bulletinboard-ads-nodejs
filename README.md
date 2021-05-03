@@ -3,6 +3,9 @@ This is the **Node.js** version of the advertisements-service for the bulletin b
 Advertisements can be created, deleted and viewed.
 You can interact with the service using a REST client like Postman or the GUI.
 
+## Ad-Blocker
+**If the UI does not load, please make sure your ad-blocker is not accidentially blocking parts of the application ;-)**
+
 ## Relation to 'bulletinboard-reviews'
 If a user got poor ratings from previous reviews, or hasn't received any reviews yet, the user is considered not trustworthy and will be colored red.
 
