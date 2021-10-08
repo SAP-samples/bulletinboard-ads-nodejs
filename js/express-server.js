@@ -1,7 +1,6 @@
 'use strict'
 
 const express = require('express')
-const bodyParser = require('body-parser')
 const logger = require('./logger')
 
 const CREATED = 201
@@ -10,10 +9,9 @@ const BAD_REQUEST = 400
 const NOT_FOUND = 404
 
 function ExpressServer(adsService, reviewsClient, reviewsHost, defaultLogger) {
-
     let httpServer
     const app = express()
-    app.use(bodyParser.json())
+    app.use(express.json())
 
     app.use(express.static('ui'))
 
@@ -91,7 +89,6 @@ function ExpressServer(adsService, reviewsClient, reviewsHost, defaultLogger) {
             defaultLogger.error(error.stack)
             process.exit(2)
         })
-        defaultLogger.info(`Server started on port ${port}`)
     }
 
     this.stop = async () => {

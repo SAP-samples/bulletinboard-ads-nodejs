@@ -14,9 +14,9 @@ describe('Server', function () {
     let db
     let baseUrl
 
-    const createAd = (title = '') => {
+    const createAd = (title = 'My new ad') => {
         return baseUrl.post('/api/v1/ads').send({
-            'title': title || 'My new ad',
+            'title': title,
             'contact': 'john.doe@example.com',
             'price': 15.99,
             'currency': 'EUR',
