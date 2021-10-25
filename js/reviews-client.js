@@ -1,12 +1,16 @@
-'use strict'
+import client from 'superagent'
 
-const client = require('superagent')
+class ReviewsClient {
+    #reviewsHost
 
-function ReviewsClient(reviewsHost) {
-    this.getAverageRating = async (contact) => {
-        const result = await client.get(`${reviewsHost}/api/v1/averageRatings/${contact}`)
+    constructor(reviewsHost) {
+        this.#reviewsHost = reviewsHost
+    }
+
+    async getAverageRating(contact) {
+        const result = await client.get(`${this.#reviewsHost}/api/v1/averageRatings/${contact}`)
         return result.body.average_rating
     }
 }
 
-module.exports = ReviewsClient
+export default ReviewsClient

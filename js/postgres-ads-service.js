@@ -1,11 +1,11 @@
-'use strict'
+import pg from 'pg'
 
-const pg = require('pg')
+class PostgresAdsService {
+    #pool
+    #logger
+    #tableInitialized
 
-function PostgresAdsService(dbConnectionUri, logger) {
-
-    const pool = new pg.Pool({ 'connectionString': dbConnectionUri })
-    const CREATE_SQL = `CREATE TABLE IF NOT EXISTS "advertisements" (
+    #CREATE_SQL = `CREATE TABLE IF NOT EXISTS "advertisements" (
         "id" SERIAL PRIMARY KEY,
         "title" VARCHAR (256),
         "contact" VARCHAR (256),
@@ -15,58 +15,62 @@ function PostgresAdsService(dbConnectionUri, logger) {
         "createdAt" TIMESTAMP,
         "modifiedAt" TIMESTAMP)`
 
-    const tableInitialized = pool.query(CREATE_SQL).then(function () {
-        logger.info('Database connection established')
-    }).catch(function(error) {
-        logger.error(error.stack)
-        process.exit(1)
-    })
+    constructor(dbConnectionUri, logger) {
+        this.#logger = logger
+        this.#pool = new pg.Pool({ 'connectionString': dbConnectionUri })
+        this.#tableInitialized = this.#pool.query(this.#CREATE_SQL).then(() => {
+            this.#logger.info('Database connection established')
+        }).catch((error) => {
+            this.#logger.error(error.stack)
+            process.exit(1)
+        })
+    }
 
-    this.getAll = async () => {
-        await tableInitialized
-        const ads = await pool.query('SELECT * FROM "advertisements"')
+    async getAll() {
+        await this.#tableInitialized
+        const ads = await this.#pool.query('SELECT * FROM "advertisements"')
         return ads.rows
     }
 
-    this.getById = async (id) => {
-        await tableInitialized
-        const ads = await pool.query('SELECT * FROM "advertisements" WHERE "id" = $1', [id])
+    async getById(id) {
+        await this.#tableInitialized
+        const ads = await this.#pool.query('SELECT * FROM "advertisements" WHERE "id" = $1', [id])
         return ads.rows[0] || null
     }
 
-    this.createAd = async (ad) => {
-        await tableInitialized
+    async createAd(ad) {
+        await this.#tableInitialized
         const statement = `INSERT INTO "advertisements" 
         ("title", "contact", "price", "currency", "category", "createdAt") VALUES
         ($1, $2, $3, $4, $5, $6) RETURNING *`
         const values = [ad.title, ad.contact, ad.price, ad.currency, ad.category, new Date()]
-        const result = await pool.query(statement, values)
+        const result = await this.#pool.query(statement, values)
         return result.rows[0]
     }
 
-    this.updateAd = async (id, ad) => {
-        await tableInitialized
+    async updateAd(id, ad) {
+        await this.#tableInitialized
         const statement = `UPDATE "advertisements" SET 
         ("title", "contact", "price", "currency", "category", "modifiedAt") =
         ($1, $2, $3, $4, $5, $6) WHERE "id" = $7 RETURNING *`
         const values = [ad.title, ad.contact, ad.price, ad.currency, ad.category, new Date(), id]
-        const result = await pool.query(statement, values)
+        const result = await this.#pool.query(statement, values)
         return result.rows[0]
     }
 
-    this.deleteAll = async () => {
-        await tableInitialized
-        return pool.query('DELETE FROM "advertisements"')
+    async deleteAll() {
+        await this.#tableInitialized
+        return this.#pool.query('DELETE FROM "advertisements"')
     }
 
-    this.deleteById = async (id) => {
-        await tableInitialized
-        return pool.query('DELETE FROM "advertisements" WHERE "id" = $1', [id])
+    async deleteById(id) {
+        await this.#tableInitialized
+        return this.#pool.query('DELETE FROM "advertisements" WHERE "id" = $1', [id])
     }
 
-    this.stop = async () => {
-        await pool.end()
+    async stop() {
+        await this.#pool.end()
     }
 }
 
-module.exports = PostgresAdsService
+export default PostgresAdsService

@@ -1,9 +1,9 @@
-const assert = require('assert')
-const PostgresAdsService = require('../js/postgres-ads-service')
-const ExpressServer = require('../js/express-server')
-const request = require('supertest')
-const sinon = require('sinon')
-const logger = require('../js/logger')
+import assert from 'assert'
+import PostgresAdsService from '../js/postgres-ads-service.js'
+import ExpressServer from '../js/express-server.js'
+import request from 'supertest'
+import sinon from 'sinon'
+import logger from '../js/logger.js'
 
 const DB_CONNECTION_URI = 'postgres://postgres@localhost:5432/testdb'
 const PORT = 8081
@@ -35,9 +35,7 @@ describe('Server', function () {
         await baseUrl.delete('/api/v1/ads').expect(204)
     })
 
-    after(async () => {
-        server.stop()
-    })
+    after(() => server.stop())
 
     afterEach(async () => {
         await baseUrl.delete('/api/v1/ads').expect(204)

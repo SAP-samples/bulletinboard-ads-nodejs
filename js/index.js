@@ -1,9 +1,7 @@
-'use strict'
-
-const ExpressServer = require('./express-server')
-const PostgresAdsService = require('./postgres-ads-service')
-const ReviewsClient = require('./reviews-client')
-const logger = require('./logger')
+import ExpressServer from './express-server.js'
+import PostgresAdsService from './postgres-ads-service.js'
+import ReviewsClient from './reviews-client.js'
+import logger from './logger.js'
 
 const REVIEWS_HOST_DEFAULT = 'http://localhost:9090'
 const DB_CONNECTION_URI_DEFAULT = 'postgres://postgres@localhost:5432/postgres'
