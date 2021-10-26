@@ -7,9 +7,9 @@ const REVIEWS_HOST_DEFAULT = 'http://localhost:9090'
 const DB_CONNECTION_URI_DEFAULT = 'postgres://postgres@localhost:5432/postgres'
 const PORT_DEFAULT = 8080
 
-//REVISE if the separation HOST/HOST_INTERNAL is only for local development in K8s context, maybe s.th. like "kubernetes.docker.internal" could help (is already mapped to 127.0.0.1 in /etc/hosts)
+// REVISE if the separation HOST/HOST_INTERNAL is only for local development in K8s context, maybe s.th. like "kubernetes.docker.internal" could help (is already mapped to 127.0.0.1 in /etc/hosts)
 const REVIEWS_HOST = process.env.REVIEWS_HOST || REVIEWS_HOST_DEFAULT
-const REVIEWS_HOST_INTERNAL = process.env.REVIEWS_HOST_INTERNAL || REVIEWS_HOST
+const REVIEWS_HOST_INTERNAL = process.env.REVIEWS_HOST_INTERNAL || REVIEWS_HOST
 
 const dbUriCf = process.env.VCAP_SERVICES ? JSON.parse(process.env.VCAP_SERVICES).postgresql[0].credentials.uri : undefined
 const dbUriK8s = process.env.POSTGRES_URI
