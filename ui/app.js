@@ -50,7 +50,7 @@ app.component('ads-overview', {
         <ui5-page style='height: 100vh;' floating-footer show-footer>
             <ads-header slot='header' />
 
-            <ui5-message-strip v-if='message' @close='clearMessage' design='Negative' style='margin-top: 1rem;'>{{message}}</ui5-message-strip>
+            <ui5-message-strip v-if='message' @close='this.message = ""' design='Negative' style='margin-top: 1rem;'>{{message}}</ui5-message-strip>
 
             <div style='display: flex; justify-content: center; margin-top: 1rem;'>
                 <ads-card v-for='ad in ads' key='ad.id' :ad='ad' />
@@ -70,9 +70,6 @@ app.component('ads-overview', {
         this.message = message
     },
     methods: {
-        clearMessage: function () {
-            this.message = ''
-        },
         create: function () {
             window.location.hash = '#/new'
         }
@@ -116,37 +113,8 @@ app.component('ad-details', {
     template: html`
         <ui5-page style='height: 100vh;' floating-footer show-footer>
             <ads-header slot='header' />
-
-            <ui5-message-strip v-if='message' @close='clearMessage' design='Negative' style='margin-top: 1rem;'>{{message}}</ui5-message-strip>
-
-            <ui5-card style='margin-top: 1rem;' class='small'>
-                <ui5-card-header slot='header' :title-text='ad.title' />
-                <div style='display: flex; flex-direction: column;'>
-                    <div style='margin: 1rem;'>
-                        <ui5-label required for='title' style='width: 100%'>Title</ui5-label>
-                        <ui5-input id='title' :disabled='!isEdit' v-model='ad.title' />
-                    </div>
-                    <div style='margin: 1rem;'>
-                        <ui5-label required for='price' style='width: 100%'>Price</ui5-label>
-                        <ui5-input id='price' type='Number' :disabled='!isEdit' :value='ad.price' @change='setPrice' />
-                    </div>
-                    <div style='margin: 1rem;'>
-                        <ui5-label required for='currency' style='width: 100%'>Currency</ui5-label>
-                        <ui5-input id='currency' :disabled='!isEdit' v-model='ad.currency' />
-                    </div>
-                    <div style='margin: 1rem;'>
-                        <ui5-label required for='contact' style='width: 100%'>Contact</ui5-label>
-                        <ui5-input id='contact' :disabled='!isEdit' v-model='ad.contact' />
-                    </div>
-                    <div v-if='!isEdit' style='margin: 1rem;'>
-                        <ui5-label for='rating' style='width: 100%'>Contact Rating</ui5-label>
-                        <ui5-title id='rating'>
-                            <ui5-link :href='ad.reviewsUrl' target='_blank'>{{ad.averageContactRating}} ({{trustLevel}})</ui5-link>
-                        </ui5-title>
-                    </div>
-                </div>
-            </ui5-card>
-
+            <ui5-message-strip v-if='message' @close='this.message = ""' design='Negative' style='margin-top: 1rem;'>{{message}}</ui5-message-strip>
+            <ad-card :ad='ad' :isEdit='isEdit' />
             <ui5-bar slot='footer' design='FloatingFooter'>
                 <ui5-button v-if='!isEdit' @click='edit' icon='edit' slot='endContent'></ui5-button>
                 <ui5-button v-if='!isEdit' @click='del' icon='delete' design='Negative' slot='endContent'></ui5-button>
@@ -157,18 +125,13 @@ app.component('ad-details', {
     `,
     props: ['adId', 'isCreate'],
     data: function () {
-        return {
-            ad: {},
-            initialAd: {},
-            isEdit: false,
-            message: ''
-        }
+        return { ad: {}, initialAd: {}, isEdit: false, message: '' }
     },
     created: async function () {
         // Don't ask me why we have to delay this, seems to be a WebComponents bug: it works without delay when using <input> instead of <ui5-input>
         setTimeout(() => this.isEdit = this.isCreate, 0)
         if (!this.isCreate) {
-            const {ad, message} = await client.get(this.adId)
+            const { ad, message } = await client.get(this.adId)
             this.message = message
             if (!message) {
                 this.ad = ad
@@ -176,24 +139,7 @@ app.component('ad-details', {
             }
         }
     },
-    computed: {
-        trustLevel: function () {
-            if (this.ad.averageContactRating < 2) {
-                return 'Untrusted'
-            } else if (this.ad.averageContactRating < 4) {
-                return 'Average'
-            } else {
-                return 'Trusted'
-            }
-        }
-    },
     methods: {
-        setPrice: function (event) {
-            this.ad.price = parseFloat(event.target.value)
-        },
-        clearMessage: function () {
-            this.message = ''
-        },
         cancel: function () {
             this.isEdit = false
             if (this.isCreate) {
@@ -212,16 +158,48 @@ app.component('ad-details', {
             }
         },
         save: async function () {
-            const { ad, message } = this.isCreate ? await client.create(this.ad) : await client.update(this.ad)
-            this.message = message
-            if (!message) {
-                this.ad = ad
-                this.initialAd = JSON.parse(JSON.stringify(this.ad))
-                this.isEdit = false
+            this.message = this.isCreate ? await client.create(this.ad) : await client.update(this.ad)
+            if (!this.message) {
+                window.location.hash = '#/'
             }
-            if (this.isCreate) {
-                window.location.hash =  `#/show/${ad.id}`
-            }
+        }
+    }
+})
+
+app.component('ad-card', {
+    template: html`
+        <ui5-card style='margin-top: 1rem;' class='small'>
+            <ui5-card-header slot='header' :title-text='ad.title' />
+            <div style='display: flex; flex-direction: column;'>
+                <div style='margin: 1rem;'>
+                    <ui5-label required for='title' style='width: 100%'>Title</ui5-label>
+                    <ui5-input id='title' :disabled='!isEdit' v-model='ad.title' />
+                </div>
+                <div style='margin: 1rem;'>
+                    <ui5-label required for='price' style='width: 100%'>Price</ui5-label>
+                    <ui5-input id='price' type='Number' :disabled='!isEdit' :value='ad.price' @change='setPrice' />
+                </div>
+                <div style='margin: 1rem;'>
+                    <ui5-label required for='currency' style='width: 100%'>Currency</ui5-label>
+                    <ui5-input id='currency' :disabled='!isEdit' v-model='ad.currency' />
+                </div>
+                <div style='margin: 1rem;'>
+                    <ui5-label required for='contact' style='width: 100%'>Contact</ui5-label>
+                    <ui5-input id='contact' :disabled='!isEdit' v-model='ad.contact' />
+                </div>
+                <div v-if='!isEdit' style='margin: 1rem;'>
+                    <ui5-label for='rating' style='width: 100%'>Contact Rating</ui5-label>
+                    <ui5-title id='rating'>
+                        <ui5-link :href='ad.reviewsUrl' target='_blank'>{{ad.averageContactRating}}</ui5-link>
+                    </ui5-title>
+                </div>
+            </div>
+        </ui5-card>
+    `,
+    props: ['isEdit', 'ad'],
+    methods: {
+        setPrice: function (event) {
+            this.ad.price = parseFloat(event.target.value)
         }
     }
 })
