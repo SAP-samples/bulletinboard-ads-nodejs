@@ -49,7 +49,7 @@ app.component('ads-overview', {
 
             <ui5-message-strip v-if='message' @close='clearMessage' design='Negative' style='margin-top: 1rem;'>{{message}}</ui5-message-strip>
 
-            <div style='display: flex;'>
+            <div style='display: flex; justify-content: center; margin-top: 1rem;'>
                 <ads-card v-for='ad in ads' key='ad.id' :ad='ad' />
             </div>
 
