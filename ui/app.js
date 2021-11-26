@@ -49,13 +49,10 @@ app.component('ads-overview', {
     template: html`
         <ui5-page style='height: 100vh;' floating-footer show-footer>
             <ads-header slot='header' />
-
             <ui5-message-strip v-if='message' @close='this.message = ""' design='Negative' style='margin-top: 1rem;'>{{message}}</ui5-message-strip>
-
             <div style='display: flex; justify-content: center; margin-top: 1rem;'>
                 <ads-card v-for='ad in ads' key='ad.id' :ad='ad' />
             </div>
-
             <ui5-bar slot='footer' design='FloatingFooter'>
                 <ui5-button @click='create' icon='add' design='Positive' slot='endContent'></ui5-button>
             </ui5-bar>
