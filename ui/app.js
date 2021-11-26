@@ -1,6 +1,9 @@
 'use strict'
 
 import { createApp } from 'https://cdn.jsdelivr.net/npm/vue@3.2.22/dist/vue.esm-browser.prod.js'
+import Client from '/client.js'
+
+const client = new Client()
 
 const app = createApp({
     template: html`
@@ -62,14 +65,9 @@ app.component('ads-overview', {
         return { ads: [], message: '' }
     },
     created: async function () {
-        const response = await fetch('/api/v1/ads')
-        if (response.status === 200) {
-            this.message = ''
-            const ads = await response.json()
-            this.ads = ads.value
-            } else {
-            this.message = await response.text()
-        }        
+        const { ads, message } = await client.getAll()
+        this.ads = ads
+        this.message = message
     },
     methods: {
         clearMessage: function () {
@@ -170,9 +168,12 @@ app.component('ad-details', {
         // Don't ask me why we have to delay this, seems to be a WebComponents bug: it works without delay when using <input> instead of <ui5-input>
         setTimeout(() => this.isEdit = this.isCreate, 0)
         if (!this.isCreate) {
-            const response = await fetch(`/api/v1/ads/${this.adId}`)
-            this.ad = await response.json()
-            this.initialAd = JSON.parse(JSON.stringify(this.ad))
+            const {ad, message} = await client.get(this.adId)
+            this.message = message
+            if (!message) {
+                this.ad = ad
+                this.initialAd = JSON.parse(JSON.stringify(this.ad))
+            }
         }
     },
     computed: {
@@ -205,42 +206,21 @@ app.component('ad-details', {
             this.isEdit = true
         },
         del: async function () {
-            await fetch(`/api/v1/ads/${this.adId}`, {
-                method: 'delete'
-            })
-            window.location.hash = '#/'
+            this.message = await client.delete(this.adId)
+            if (!this.message) {
+                window.location.hash = '#/'
+            }
         },
         save: async function () {
+            const { ad, message } = this.isCreate ? await client.create(this.ad) : await client.update(this.ad)
+            this.message = message
+            if (!message) {
+                this.ad = ad
+                this.initialAd = JSON.parse(JSON.stringify(this.ad))
+                this.isEdit = false
+            }
             if (this.isCreate) {
-                const response = await fetch('/api/v1/ads', {
-                    method: 'post',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(this.ad)
-                })
-                if (response.status === 201) {
-                    const locationSegments = response.headers.get('location').split('/')
-                    this.isEdit = false
-                    this.message = ''
-                    this.ad = await response.json()
-                    this.initialAd = JSON.parse(JSON.stringify(this.ad))
-                    window.location.hash = `#/show/${locationSegments[locationSegments.length - 1]}`
-                } else {
-                    this.message = await response.text()
-                }
-            } else {
-                const response = await fetch(`/api/v1/ads/${this.adId}`, {
-                    method: 'put',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(this.ad)
-                })
-                if (response.status === 200) {
-                    this.isEdit = false
-                    this.message = ''
-                    this.ad = await response.json()
-                    this.initialAd = JSON.parse(JSON.stringify(this.ad))
-                } else {
-                    this.message = await response.text()
-                }
+                window.location.hash =  `#/show/${ad.id}`
             }
         }
     }
