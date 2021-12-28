@@ -1,113 +1,121 @@
-# bulletinboard-ads
-This is the **Node.js** version of the advertisements-service for the bulletin board application.
-Advertisements can be created, deleted and viewed.
-You can interact with the service using a REST client like Postman or the GUI.
+# Bulletin Board - Advertisements Service
 
-## Ad-Blocker
-**If the UI does not load, please make sure your ad-blocker is not accidentially blocking parts of the application ;-)**
+## Description
 
-## Relation to 'bulletinboard-reviews'
-If a user got poor ratings from previous reviews, or hasn't received any reviews yet, the user is considered not trustworthy and will be colored red.
+This is the advertisements service for the bulletin board application. Users can advertise things that they would like to sell. The server is written in Node.js. The client is written using Preact and SAP UI5 Web Components. The purpose of this application is to demonstrate Microservice development and related tradeoffs. In particular, this service is tightly coupled to the bulletinboard-reviews service, through a synchronous HTTP call to an API for a very specific feature that the advertisements service needs. This is a typical pitfall in Microservice development and can be mitigated by leveraging eventual consistency & asynchronous communication.
 
-## How to work locally
-To execute the tests or to start the service a local database is needed.
-The script `start-db.sh` can be used to start a local database (using Docker).
+### Relation to 'bulletinboard-reviews'
 
-Also the dependencies need to be installed. Run `npm install` to install those.
+If a contact of an advertisement got poor ratings from previous reviews, or hasn't received any reviews yet, the contact is considered not trustworthy and will be colored red.
 
-### Execute tests
-The tests can be executed with npm: `npm test`
+## Requirements
 
-### Start service locally
-Run `npm start` to start the service.
-The service will listen on port 8080.
+The following tools are required to run the service locally:
+- Node.js, v16 or later
+- Docker engine, v20 or later
+  - Alternatively, a PostgreSQL database, v9.6 or later
+- Optionally a Bourne shell
+  - Provided shell scripts make the startup easier
+  - Git bash is a good choice for Windows users
 
-## A word on cloud readiness
+## Local Setup
+
+- Start a pre-configured database using Docker: `./start-db.sh`
+  - If you want to start the database manually, or use your own PostgreSQL installation without Docker, have a look into the shell script to know the required configuration for version, database name, port, credentials and schema
+- Install the required dependencies: `npm ci`
+- Run the tests: `npm test`
+- Start the service: `npm start`
+  - The service will listen on port 8080
+
+**NOTE:** since this is a sample for a typical Microservice pitfall, the service is tightly coupled to the bulletinboard-reviews service. You need to start the bulletinboard-reviews as well so that the advertisements service works correctly!
+
+## Cloud Setup
 
 ### Cloud Foundry
-To speed a up the configuration for a deployment in Cloud Foundry a [manifest.yaml](manifest.yaml) with placeholders is provided.
+
+For a deployment on Cloud Foundry, a pre-configured [manifest.yaml](manifest.yaml) with placeholders is provided.
 
 ### Kubernetes
-For a deployment of the service in Kubernetes a pre-configured yaml-file ([k8s-minimal.yaml](k8s-minimal.yaml)) with placeholders is already part of the repository.
-Along with a basic [Dockerfile](Dockerfile).
 
-## Interact with the application
+For a deployment on Kubernetes, a pre-configured [k8s-minimal.yaml](k8s-minimal.yaml) with placeholders is provided, along with a basic [Dockerfile](Dockerfile).
 
-### Using the API
-The following endpoints are supported and tested (remember to set the `application/json` content-type header):
-- `GET /api/v1/ads`: get all ads
-  Response: `200 OK`
-  Response Body:
-```
+## HTTP API
+
+The following endpoints are supported and tested:
+- `GET /api/v1/ads`: get all advertisements
+  - Response:
+    - `200 OK`
+  - Response Body:
+    ```
     [
-        {
-            "id": <int>,
-            "title": <text>,
-            "price": <number>,
-            "contact": "<text>",
-            "contactRatingState": <text>, //correlates to the average rating from the reviews service
-            "currency": <text>,
-            "category": <text>,
-            "purchasedOn": <date>,
-            "metadata": {
-                "createdAt": <date>,
-                "modifiedAt": <date>,
-                "version": <int>
-            },
-            "reviewsUrl": <text> //redirectUrl
-        },
-        ...
+      {
+        ... // properties of the adveertisement
+      },
+      ...
     ]
-```
-- `GET /api/v1/ads/:id`: get single ad
-  Response: `200 OK`
-```
+    ```
+- `GET /api/v1/ads/:id`: get single advertisement
+  - Response: `200 OK`
+    ```
     {
-        "id": <int>,
-        "title": <text>,
-        "price": <number>,
-        "contact": "<text>",
-        "contactRatingState": <text>, //correlates to the average rating from the reviews service
-        "currency": <text>,
-        "category": <text>,
-        "purchasedOn": <date>,
-        "metadata": {
-            "createdAt": <date>,
-            "modifiedAt": <date>,
-            "version": <int>
-        },
-        "reviewsUrl": <text> //redirectUrl
+      "id": <int>,
+      "title": <text>,
+      "price": <number>,
+      "contact": "<text>",
+      "averageContactRating": <text>,
+      "currency": <text>,
+      "category": <text>,
+      "createdAt": <date>,
+      "modifiedAt": <date>,
+      "reviewsUrl": <text>
     }
-```
-- `GET /api/v1/ads/:id`: get single ad
-  Response: `200 OK`
-- `POST /api/v1/ads`: post a new ad
-  Request Body:
-```
+    ```
+- `GET /api/v1/ads/:id`: get single advertisement
+  - Response:
+    - `200 OK`
+- `POST /api/v1/ads`: post a new advertisement
+  - Request Body:
+    ```
     {
-        "title": <text>,
-        "currency": <text>,
-        "price": <number>,
-        "contact": <text>,
-        "category": <text>,     //optional
-        "purchasedOn": <date>   //optional
+      "title": <text>,
+      "currency": <text>,
+      "price": <number>,
+      "contact": <text>,
+      "category": <text>
     }
-```
-- `PUT /api/v1/ads/:id`: update an ad
-  Request Body:
-```
+    ```
+  - Response:
+    - `201 Created`
+- `PUT /api/v1/ads/:id`: update an advertisement
+  - Request Headers:
+    - `Content-Type: application/json`
+  - Request Body:
+    ```
     {
-        "id": <int>,
-        "title": <text>,
-        "currency": <text>,
-        "price": <number>,
-        "contact": <text>,
-        "category": <text>,   //optional
-        "purchasedOn": <date> //optional
+      "id": <int>,
+      "title": <text>,
+      "currency": <text>,
+      "price": <number>,
+      "contact": <text>,
+      "category": <text>
     }
-```
-  Response: `201 Created`
-- `DELETE /api/v1/ads`: delete all ads
-  Response: `204 No Content`
+    ```
+  - Response:
+    - `200 OK`
+- `DELETE /api/v1/ads/:id`: delete single advertisement
+  - Response:
+    - `204 No content`
+- `DELETE /api/v1/ads/`: delete all advertisements
+  - Response:
+    - `204 No content`
 
+## How to obtain support
+[Create an issue](https://github.com/SAP-samples/bulletinboard-reviews/issues) in this repository if you find a bug or have questions about the content.
 
+For additional support, [ask a question in SAP Community](https://answers.sap.com/questions/ask.html).
+
+## Contributing
+If you wish to contribute code, offer fixes or improvements, please send a pull request. Due to legal reasons, contributors will be asked to accept a DCO when they create the first pull request to this project. This happens in an automated fashion during the submission process. SAP uses [the standard DCO text of the Linux Foundation](https://developercertificate.org/).
+
+## License
+Copyright (c) 2021 SAP SE or an SAP affiliate company. All rights reserved. This project is licensed under the Apache Software License, version 2.0 except as noted otherwise in the [LICENSE](LICENSES/Apache-2.0.txt) file.
