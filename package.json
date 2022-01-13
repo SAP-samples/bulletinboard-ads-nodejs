@@ -7,9 +7,9 @@
   "scripts": {
     "start": "node js/index.js",
     "start:debug": "node --inspect-brk js/index.js",
-    "test": "npx mocha",
-    "test:debug": "npx mocha --inspect-brk",
-    "lint": "npx eslint ."
+    "test": "mocha",
+    "test:debug": "mocha --inspect-brk",
+    "lint": "eslint ."
   },
   "engines": {
     "node": ">=16"
