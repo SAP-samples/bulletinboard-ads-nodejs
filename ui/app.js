@@ -4,11 +4,8 @@ import { html, useState, useEffect } from 'https://unpkg.com/htm@3.1.0/preact/st
 import AdsOverview from './ads-overview.js'
 import AdDetails from './ad-details.js'
 
-import Client from '/client.js'
-
-const client = new Client()
-
-const App = function () {
+// FIXME changing the hash directly when already on the details view will not load the data of the new ad
+const App = function (props) {
     const [state, setState] = useState({ adId: '', isCreate: false })
 
     useEffect(() => {
@@ -26,8 +23,8 @@ const App = function () {
 
     const showDetails = state.adId || state.isCreate
     return showDetails
-        ? html`<${AdDetails} client=${client} adId=${state.adId} isCreate=${state.isCreate} />`
-        : html`<${AdsOverview} client=${client} />`
+        ? html`<${AdDetails} client=${props.client} adId=${state.adId} isCreate=${state.isCreate} />`
+        : html`<${AdsOverview} client=${props.client} />`
 }
 
 export default App
