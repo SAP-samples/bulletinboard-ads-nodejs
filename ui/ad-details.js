@@ -27,20 +27,20 @@ const AdCard = function (props) {
         <ui5-card style='margin-top: 1rem;' class='small'>
             <ui5-card-header slot='header' title-text=${props.ad.title} />
             <div style='display: flex; flex-direction: column;'>
-                <div style='margin: 1rem;'>
-                    <ui5-label required style='width: 100%'>Title</ui5-label>
+                <div style='margin: 1rem; display: grid;'>
+                    <ui5-label required>Title</ui5-label>
                     <ui5-input disabled=${!props.isEdit} value=${props.ad.title} oninput=${setTitle} />
                 </div>
-                <div style='margin: 1rem;'>
-                    <ui5-label required style='width: 100%'>Price</ui5-label>
+                <div style='margin: 1rem; display: grid;'>
+                    <ui5-label required>Price</ui5-label>
                     <ui5-input type='Number' disabled=${!props.isEdit} value=${props.ad.price} oninput=${setPrice} />
                 </div>
-                <div style='margin: 1rem;'>
-                    <ui5-label required style='width: 100%'>Currency</ui5-label>
+                <div style='margin: 1rem; display: grid;'>
+                    <ui5-label required>Currency</ui5-label>
                     <ui5-input disabled=${!props.isEdit} value=${props.ad.currency} oninput=${setCurrency} />
                 </div>
-                <div style='margin: 1rem;'>
-                    <ui5-label required style='width: 100%'>Contact</ui5-label>
+                <div style='margin: 1rem; display: grid;'>
+                    <ui5-label required>Contact</ui5-label>
                     <ui5-input disabled=${!props.isEdit} value=${props.ad.contact} oninput=${setContact} />
                 </div>
                 ${rating}
