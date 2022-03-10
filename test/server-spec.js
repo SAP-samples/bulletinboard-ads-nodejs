@@ -2,8 +2,6 @@ import assert from 'assert'
 import PostgresAdsService from '../js/postgres-ads-service.js'
 import ExpressServer from '../js/express-server.js'
 import request from 'supertest'
-import sinon from 'sinon'
-import logger from '../js/logger.js'
 
 const DB_CONNECTION_URI = 'postgres://postgres@localhost:5432/testdb'
 const PORT = 8081
@@ -25,11 +23,10 @@ describe('Server', function () {
   }
 
   before(async () => {
-    const testLogger = logger.create()
-    sinon.stub(testLogger, 'info')
+    const dummyLogger = { info: () => null }
     const reviewsClientMock = { getAverageRating: async () => 4.5 }
-    db = new PostgresAdsService(DB_CONNECTION_URI, testLogger)
-    server = new ExpressServer(db, reviewsClientMock, REVIEWS_URL, testLogger)
+    db = new PostgresAdsService(DB_CONNECTION_URI, dummyLogger)
+    server = new ExpressServer(db, reviewsClientMock, REVIEWS_URL, dummyLogger)
     server.start(PORT)
     baseUrl = request(`http://localhost:${PORT}`)
     await baseUrl.delete('/api/v1/ads').expect(204)

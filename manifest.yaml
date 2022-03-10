@@ -1,3 +1,4 @@
+---
 applications:
   - name: bulletinboard-ads
     memory: 80MB
