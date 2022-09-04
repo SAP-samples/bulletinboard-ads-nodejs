@@ -23,7 +23,7 @@ const AdsCard = function (props) {
       <ui5-card-header slot='header' title-text=${props.ad.title} />
       <div style='display: flex; flex-direction: column; align-items: center; margin: 1rem;'>
         <ui5-title style='margin-bottom: 1rem;' level='H3'>${priceAndCurrency}</ui5-title>
-        <ui5-title style=${ratingStyle} level='H5'>${props.ad.contact}</ui5-title>
+        <ui5-title style=${ratingStyle()} level='H5'>${props.ad.contact}</ui5-title>
       </div>
       <ui5-button onclick=${navToDetails} design='Emphasized' style='position: absolute; bottom: 5%; right: 5%;'>Details</ui5-button>
     </ui5-card>
