@@ -1,24 +1,16 @@
 import pg from 'pg'
+import DBMigrate from 'db-migrate'
 
 class PostgresAdsService {
   #pool
   #logger
   #tableInitialized
 
-  #CREATE_SQL = `CREATE TABLE IF NOT EXISTS "advertisements" (
-        "id" SERIAL PRIMARY KEY,
-        "title" VARCHAR (256),
-        "contact" VARCHAR (256),
-        "price" NUMERIC,
-        "currency" VARCHAR (256),
-        "category" VARCHAR (256),
-        "createdAt" TIMESTAMP,
-        "modifiedAt" TIMESTAMP)`
-
-  constructor (config, logger) {
+  constructor(config, logger) {
+    const dbmigrate = DBMigrate.getInstance(true, { env: 'default', config: { default: { driver: 'pg', ...config } } })
     this.#logger = logger
     this.#pool = new pg.Pool(config)
-    this.#tableInitialized = this.#pool.query(this.#CREATE_SQL).then(() => {
+    this.#tableInitialized = dbmigrate.up().then(() => {
       this.#logger.info('Database connection established')
     }).catch((error) => {
       this.#logger.error(error.stack)
@@ -26,19 +18,19 @@ class PostgresAdsService {
     })
   }
 
-  async getAll () {
+  async getAll() {
     await this.#tableInitialized
     const ads = await this.#pool.query('SELECT * FROM "advertisements"')
     return ads.rows
   }
 
-  async getById (id) {
+  async getById(id) {
     await this.#tableInitialized
     const ads = await this.#pool.query('SELECT * FROM "advertisements" WHERE "id" = $1', [id])
     return ads.rows[0] || null
   }
 
-  async createAd (ad) {
+  async createAd(ad) {
     await this.#tableInitialized
     const statement = `INSERT INTO "advertisements"
         ("title", "contact", "price", "currency", "category", "createdAt") VALUES
@@ -48,7 +40,7 @@ class PostgresAdsService {
     return result.rows[0]
   }
 
-  async updateAd (id, ad) {
+  async updateAd(id, ad) {
     await this.#tableInitialized
     const statement = `UPDATE "advertisements" SET
         ("title", "contact", "price", "currency", "category", "modifiedAt") =
@@ -58,17 +50,17 @@ class PostgresAdsService {
     return result.rows[0]
   }
 
-  async deleteAll () {
+  async deleteAll() {
     await this.#tableInitialized
     return this.#pool.query('DELETE FROM "advertisements"')
   }
 
-  async deleteById (id) {
+  async deleteById(id) {
     await this.#tableInitialized
     return this.#pool.query('DELETE FROM "advertisements" WHERE "id" = $1', [id])
   }
 
-  async stop () {
+  async stop() {
     await this.#pool.end()
   }
 }
