@@ -10,7 +10,7 @@ const PORT_DEFAULT = 8080
 const REVIEWS_HOST = process.env.REVIEWS_HOST || REVIEWS_HOST_DEFAULT
 const REVIEWS_HOST_INTERNAL = process.env.REVIEWS_HOST_INTERNAL || REVIEWS_HOST
 
-const DB_CFG_DEFAULT = { connectionString: 'postgres://postgres@localhost:6543/postgres' }
+const DB_CFG_DEFAULT = { connectionString: 'postgres://postgres@localhost:5432/postgres' }
 const cfEnvFlat = Object.entries(JSON.parse(process.env.VCAP_SERVICES || '{}')).map(e => e[1]).flat()
 const cfCred = (cfEnvFlat.find(e => e.name === 'postgres-bulletinboard-ads') || { credentials: null }).credentials
 const dbCfgCf = cfCred ? { connectionString: cfCred.uri, ssl: { cert: cfCred.sslcert, ca: cfCred.sslrootcert } } : null
