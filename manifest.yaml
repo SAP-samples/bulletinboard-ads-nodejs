@@ -4,10 +4,10 @@ applications:
     memory: 80MB
     command: npm start
     routes:
-      - route: '[UNIQUE-HOSTNAME].[DOMAIN]'
+      - route: '((HOSTNAME)).((DOMAIN))'
     buildpacks:
       - https://github.com/cloudfoundry/nodejs-buildpack
     services:
       - postgres-bulletinboard-ads
     env:
-      REVIEWS_HOST: '[https|http]://[REVIEWS-URL]'
+      REVIEWS_HOST: 'https://((REVIEWSHOST)).((DOMAIN))'
