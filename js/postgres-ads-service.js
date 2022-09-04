@@ -15,9 +15,9 @@ class PostgresAdsService {
         "createdAt" TIMESTAMP,
         "modifiedAt" TIMESTAMP)`
 
-  constructor (dbConnectionUri, logger) {
+  constructor (config, logger) {
     this.#logger = logger
-    this.#pool = new pg.Pool({ connectionString: dbConnectionUri })
+    this.#pool = new pg.Pool(config)
     this.#tableInitialized = this.#pool.query(this.#CREATE_SQL).then(() => {
       this.#logger.info('Database connection established')
     }).catch((error) => {
@@ -40,7 +40,7 @@ class PostgresAdsService {
 
   async createAd (ad) {
     await this.#tableInitialized
-    const statement = `INSERT INTO "advertisements" 
+    const statement = `INSERT INTO "advertisements"
         ("title", "contact", "price", "currency", "category", "createdAt") VALUES
         ($1, $2, $3, $4, $5, $6) RETURNING *`
     const values = [ad.title, ad.contact, ad.price, ad.currency, ad.category, new Date()]
@@ -50,7 +50,7 @@ class PostgresAdsService {
 
   async updateAd (id, ad) {
     await this.#tableInitialized
-    const statement = `UPDATE "advertisements" SET 
+    const statement = `UPDATE "advertisements" SET
         ("title", "contact", "price", "currency", "category", "modifiedAt") =
         ($1, $2, $3, $4, $5, $6) WHERE "id" = $7 RETURNING *`
     const values = [ad.title, ad.contact, ad.price, ad.currency, ad.category, new Date(), id]
