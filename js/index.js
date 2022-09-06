@@ -2,6 +2,7 @@ import ExpressServer from './express-server.js'
 import PostgresAdsService from './postgres-ads-service.js'
 import ReviewsClient from './reviews-client.js'
 import logger from './logger.js'
+import WebSocket from 'ws'
 
 const REVIEWS_HOST_DEFAULT = 'http://localhost:9090'
 const PORT_DEFAULT = 8080
@@ -20,6 +21,13 @@ const dbCfg = dbCfgCf || dbCfgK8s || DB_CFG_DEFAULT
 const defaultLogger = logger.create()
 const adsService = new PostgresAdsService(dbCfg, defaultLogger)
 const reviewsClient = new ReviewsClient(REVIEWS_HOST_INTERNAL)
+
+function connectMq() {
+  const ws = new WebSocket(`ws://${new URL(REVIEWS_HOST_INTERNAL).host}`);
+  ws.on('close', () => setTimeout(connectMq, 1000))
+  ws.on('error', () => setTimeout(connectMq, 1000))
+}
+connectMq()
 
 const server = new ExpressServer(adsService, reviewsClient, REVIEWS_HOST, defaultLogger)
 
